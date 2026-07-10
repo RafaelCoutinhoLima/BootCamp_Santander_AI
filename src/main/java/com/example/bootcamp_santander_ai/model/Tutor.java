@@ -1,5 +1,6 @@
 package com.example.bootcamp_santander_ai.model;
 import jakarta.persistence.*;
+@Entity
 public class Tutor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
