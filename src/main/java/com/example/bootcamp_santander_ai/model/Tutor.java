@@ -5,16 +5,16 @@ public class Tutor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String nome;
+    private String name;
     @ManyToOne
-    private Endereco endereco;
+    private Address address;
 
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public long getId() {
@@ -25,11 +25,11 @@ public class Tutor {
         this.id = id;
     }
 
-    public Endereco getEndereco() {
-        return endereco;
+    public Address getEndereco() {
+        return address;
     }
 
-    public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
+    public void setEndereco(Address address) {
+        this.address = address;
     }
 }
