@@ -2,7 +2,7 @@ package com.example.bootcamp_santander_ai.service;
 import com.example.bootcamp_santander_ai.model.Tutor;
 
 public interface TutorService {
-    Iterable<Tutor> listarAll();
+    Iterable<Tutor> findAll();
     Tutor findByiD(Long id);
     void insert(Tutor tutor);
     void update(Long id,Tutor tutor);

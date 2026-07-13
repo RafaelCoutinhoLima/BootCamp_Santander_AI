@@ -6,59 +6,59 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Address {
+
     @Id
+    @JsonAlias("cep")
     private String zipCode;
+
+    @JsonAlias("logradouro")
     private String street;
-    private String adressLine2;
+
+    @JsonAlias("complemento")
+    private String addressLine2;
+
+    @JsonAlias("bairro")
     private String neighborhood;
+
     @JsonAlias("localidade")
     private String city;
+
+    @JsonAlias("uf")
     private String state;
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
 
     public String getZipCode() {
         return zipCode;
     }
-
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
-
-    public String getAdressLine2() {
-        return adressLine2;
+    public String getStreet() {
+        return street;
     }
-
-    public void setAdressLine2(String adressLine2) {
-        this.adressLine2 = adressLine2;
+    public void setStreet(String street) {
+        this.street = street;
     }
-
+    public String getAddressLine2() {
+        return addressLine2;
+    }
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
+    }
     public String getNeighborhood() {
         return neighborhood;
     }
-
     public void setNeighborhood(String neighborhood) {
         this.neighborhood = neighborhood;
     }
-
     public String getCity() {
         return city;
     }
-
     public void setCity(String city) {
         this.city = city;
     }
-
     public String getState() {
         return state;
     }
-
     public void setState(String state) {
         this.state = state;
     }

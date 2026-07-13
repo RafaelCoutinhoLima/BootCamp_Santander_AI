@@ -25,11 +25,11 @@ public class Tutor {
         this.id = id;
     }
 
-    public Address getEndereco() {
+    public Address getAdress() {
         return address;
     }
 
-    public void setEndereco(Address address) {
+    public void setAdress(Address address) {
         this.address = address;
     }
 }

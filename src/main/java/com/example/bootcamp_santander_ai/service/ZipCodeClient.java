@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name="ZipCodeClient",url="http://ZipCodeClient.com.br/ws")
+@FeignClient(name="ZipCodeClient",url="http://viacep.com.br/ws")
 public interface ZipCodeClient {
     @GetMapping("/{zipCode}json/")
     Address getAddressByZipCode(@PathVariable("zipCode") String zipCode);
