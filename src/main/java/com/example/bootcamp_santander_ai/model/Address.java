@@ -1,5 +1,6 @@
 package com.example.bootcamp_santander_ai.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -10,6 +11,7 @@ public class Address {
     private String street;
     private String adressLine2;
     private String neighborhood;
+    @JsonAlias("localidade")
     private String city;
     private String state;
 
