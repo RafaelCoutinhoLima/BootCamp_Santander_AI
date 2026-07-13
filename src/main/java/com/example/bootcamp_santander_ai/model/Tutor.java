@@ -25,11 +25,11 @@ public class Tutor {
         this.id = id;
     }
 
-    public Address getAdress() {
+    public Address getAddress() {
         return address;
     }
 
-    public void setAdress(Address address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 }
