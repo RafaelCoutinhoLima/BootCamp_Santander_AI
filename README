@@ -1,0 +1,127 @@
+# 🐾 Petshop API — Design Patterns com Spring Boot
+
+API REST de cadastro de **tutores de pets** que consome a API pública **[ViaCEP](https://viacep.com.br)**: ao cadastrar um tutor informando apenas o CEP, o endereço completo é buscado, preenchido automaticamente e persistido em banco H2.
+
+Projeto desenvolvido para o desafio de **Design Patterns** do **Bootcamp Santander — DIO**, com o objetivo de demonstrar os padrões na prática. Em vez de reproduzir o projeto da aula, optei por criar um **domínio próprio** (petshop, com nomenclatura em inglês) aplicando os mesmos conceitos.
+
+---
+
+## 🎯 Padrões de Projeto aplicados
+
+### Singleton
+Os beans gerenciados pelo Spring (`@Service`, `@RestController` e os repositórios) são, por padrão, **instância única** reutilizada em toda a aplicação. Em nenhum ponto do código há `new` para essas classes — o Spring cria, guarda e injeta a mesma instância via `@Autowired` (injeção de dependência).
+
+### Strategy
+A regra de negócio é definida pela **interface** `TutorService` e implementada em `TutorServiceImpl`. O controller depende **apenas do contrato**, nunca da implementação concreta — o que permite trocar a estratégia (uma nova implementação com validações, outro banco, etc.) **sem alterar uma linha do controller**.
+
+O mesmo princípio se aplica ao `ZipCodeClient` (OpenFeign): a integração com o ViaCEP fica isolada em uma interface. Se amanhã a API de CEP mudar, apenas esse arquivo é tocado.
+
+### Facade
+O método `saveTutorWithZipCode` (em `TutorServiceImpl`) esconde toda a complexidade de coordenar **banco de dados + API externa** atrás de uma chamada simples:
+
+1. Extrai o CEP do tutor;
+2. Verifica se o endereço **já existe no banco** — se sim, reutiliza (funciona como cache, evitando chamadas desnecessárias à API externa);
+3. Se não existe, consulta o **ViaCEP**, salva o endereço e vincula ao tutor;
+4. Persiste o tutor.
+
+Quem chama só conhece `insert(tutor)` — toda a orquestração fica atrás da fachada.
+
+---
+
+## 🏗️ Arquitetura
+
+```
+controller/  → TutorController        (endpoints REST — o "garçom")
+service/     → TutorService           (interface — o contrato / Strategy)
+             → ZipCodeClient          (client Feign para o ViaCEP)
+service/impl → TutorServiceImpl       (implementação — Singleton + Facade)
+repository/  → TutorRepository        (Spring Data JPA)
+             → AddressRepository
+model/       → Tutor, Address         (entidades JPA)
+```
+
+Fluxo de um cadastro:
+
+```
+POST /tutors  →  Controller  →  Service (Facade)  →  já tem o CEP no banco?
+                                                      ├── sim → reutiliza
+                                                      └── não → ViaCEP → salva
+                                                   →  salva o Tutor  →  resposta com endereço completo
+```
+
+---
+
+## 🛠️ Stack
+
+- **Java 17+** (desenvolvido e testado com JDK 26)
+- **Spring Boot 3.3** (Web, Data JPA)
+- **Spring Cloud OpenFeign** — client HTTP declarativo para o ViaCEP
+- **H2 Database** — banco em memória, com console web habilitado
+- **Maven**
+
+Detalhe de implementação: como o ViaCEP responde em português (`logradouro`, `bairro`, `localidade`...) e o modelo do projeto é em inglês (`street`, `neighborhood`, `city`...), a tradução é feita com **`@JsonAlias`** — que atua apenas na leitura do JSON externo, mantendo a resposta da API no idioma do domínio.
+
+---
+
+## 🚀 Como executar
+
+```bash
+# clonar o repositório
+git clone https://github.com/RafaelCoutinhoLima/BootCamp_Santander_AI.git
+cd BootCamp_Santander_AI
+
+# rodar
+./mvnw spring-boot:run
+```
+
+A aplicação sobe em `http://localhost:8080`.
+
+## 📡 Endpoints
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `GET` | `/tutors` | Lista todos os tutores |
+| `GET` | `/tutors/{id}` | Busca um tutor por id |
+| `POST` | `/tutors` | Cadastra um tutor (endereço preenchido via CEP) |
+| `PUT` | `/tutors/{id}` | Atualiza um tutor |
+| `DELETE` | `/tutors/{id}` | Remove um tutor |
+
+### Exemplo — cadastrando com apenas o CEP
+
+Requisição:
+
+```json
+POST /tutors
+{
+  "name": "Maria Silva",
+  "address": { "zipCode": "01001000" }
+}
+```
+
+Resposta (endereço preenchido automaticamente pelo ViaCEP):
+
+```json
+{
+  "id": 1,
+  "name": "Maria Silva",
+  "address": {
+    "zipCode": "01001-000",
+    "street": "Praça da Sé",
+    "neighborhood": "Sé",
+    "city": "São Paulo",
+    "state": "SP"
+  }
+}
+```
+
+### Console do banco (H2)
+
+Com a aplicação rodando, acesse `http://localhost:8080/h2-console`:
+- **JDBC URL:** `jdbc:h2:mem:petshop`
+
+---
+
+## 📚 Referências
+
+- [Lab DIO — Padrões de Projeto com Spring](https://github.com/digitalinnovationone/lab-padroes-projeto-spring)
+- [ViaCEP — API de consulta de CEPs](https://viacep.com.br)
